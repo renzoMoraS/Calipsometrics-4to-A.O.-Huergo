@@ -1,2 +1,7 @@
-# Calipsometrics-4to-A.O.-Huergo
-Proyecto realizado en el marco de prácticas profesionalizantes, en el Instituto Industrial Luis A. Huergo, para la empres Calipso.
+# soloEnReact
+
+This is a project from the Luis A. Huergo Institute students to the enterprise Calipso using:
+
+- Mercadolibre's API.
+- HTML, CSS, JavaScript.
+- React.
