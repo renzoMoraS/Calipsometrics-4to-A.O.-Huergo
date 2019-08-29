@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // support json encoded bodies
 
 // Settings
-app.set('port', process.env.PORT || 4000); //Prueba
+app.set('port', process.env.PORT || 4000); //Pru
 
 
 var options = { 
