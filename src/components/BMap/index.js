@@ -8,7 +8,6 @@ import { parse } from 'query-string';
 var complete_marker_list = {name: {}, lat: {}, long: {}};
 var marker_list = {name: {0:0},cant: {0:0}, lat: {0:0}, long: {0:0}};
 var url = 'https://api.mercadolibre.com/oauth/token?';
-var data;
 
 var options = {
   form: {

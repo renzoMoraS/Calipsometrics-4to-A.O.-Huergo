@@ -37,8 +37,7 @@ Necesitan haber leído la documentación de mercadolibre sobre cómo autenticar 
 
 
 //=====================================================
-/// === IMPORTAMOS MÓDULOS ============================
-
+/// === IMPORTAMOS MÓDULOS ============================+
 // Nos traemos express, que es todo un framework para armar aplicaciones web.
 var express = require('express');
 var app = express(); // Creamos una instancia de express, y la llamamos app.
@@ -66,6 +65,7 @@ module.exports = {
 
 const cors = require('cors')
 app.use(cors())
+
 //=====================================================
 
 
@@ -172,6 +172,15 @@ app.get('/BMap', function(req, res) {
     
 } )
 
+app.post('/categories',function(req,res){
+    console.log(req.body.category);
+    var cat = req.body.category;
+    var url = 'https://api.mercadolibre.com/categories/' + cat
+    request.get({url: url}, function (error, response, body) {
+        var catName = JSON.parse(body);
+        res.send(catName.name)
+    })
+});	
 // ===== END ROUTING =====
 
 // Levanto el server en express en el puerto 8081.

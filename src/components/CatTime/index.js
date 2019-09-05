@@ -6,10 +6,30 @@ import {Line} from 'react-chartjs-2';
 
 var categories = [0]
 var catBoolean = false
-var showCats = []
-var arrayNormie = []
+var showCats = [{
+        label:"No funca",
+        data: [0,1,2,3,4,5,6,7,8,9,10,11],
+        fill: true,
+        color:"#04B404",
+        borderColor: "#04B404",
+        borderWidth: 2
+    }]
+var arrayNombres = []
 var speedData
 var month = [12]
+var data
+//var data = JSON.parse(localStorage.getItem('clientsOrders'));
+
+fetch('http://localhost:8081/BMap')
+.then(function(datain) {
+  return datain.json()
+})
+.then(function(dats){
+  console.log(dats)
+  var datax = dats
+  console.log(data)
+  localStorage.setItem("data",JSON.stringify(datax))
+})
 
 class CatTime extends Component {
     constructor(props){
@@ -18,69 +38,64 @@ class CatTime extends Component {
     }
 
     componentWillMount(){
-        month = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+        data = JSON.parse(localStorage.getItem("data"))
 
         let currentComponent = this;
 
-        var data = JSON.parse(localStorage.getItem('clientsOrders'));
+        month = [0,0,0,0,0,0,0,0,0,0,0,0]
 
         for (var i = 0; i < data.results.length; i++) {
             
             catBoolean = false
+    
             if (data.results[i].status === "paid" && data.results[i].shipping.receiver_address !== undefined && data.results[i].shipping.receiver_address.latitude !== null) {
                 var category = data.results[i].order_items[0].item.category_id
-
+    
                 for (var x = 0; x < categories.length; x++) {
                     if (category === categories[x]) {
                         catBoolean = true
                     }
                 }
-
+    
                 if (catBoolean === false) {
                     if (categories[0] === 0) {
                         categories[0] = category
                     }else{
                         categories[categories.length] = category
                     }
-
-                    fetch('/categories', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                          "category": category
-                        }),
-                        headers:{
-                          'Content-Type': 'application/json',
-                        }
-                    })
-                    .then(function(response){
-                        return response.text()
-                        .then(function(data) {
-                            arrayNormie.push(data)
+                    
+                        fetch('http://localhost:8081/categories', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                              "category": category
+                            }),
+                            headers:{
+                              'Content-Type': 'application/json',
+                            }
                         })
-                    })
-                    .then(function() {
-                        console.log(arrayNormie.length)
-                        showCats.push({
-                            label: arrayNormie[arrayNormie.length - 1],
-                            data: month,
-                            fill: true,
-                            color:"#04B404",
-                            borderColor: "#04B404",
-                            borderWidth: 2
+                        .then(function(response){
+                            return response.text()
+                            .then(function(data) {
+                                //console.log('esto es data')
+                                console.log(data)
+                                arrayNombres.push(data)
+                                //console.log(arrayNombres)
+                                currentComponent.setState({termino:true})
+                                currentComponent.setState({termino:false})
+                            })
                         })
-
-                        month = [0,0,0,0,0,0,0,0,0,0,0,0]
-                        
-                        currentComponent.setState({termino:true})
-                        
-                        console.log(showCats)
-                    });
                 }
             }
         }
+    }
+  
+    render() {
+        if (data !== undefined) {
+            data = JSON.parse(localStorage.getItem("data"))
+
 
         for (var j = 0; j < categories.length; j++) {
-            console.log(categories[j])
             for (var p = 0; p < data.results.length; p++) {
                 if (data.results[p].order_items[0].item.category_id === categories[j] && data.results[p].status === "paid" && data.results[p].shipping.receiver_address !== undefined && data.results[p].shipping.receiver_address.latitude !== null) {
                     switch (data.results[p].date_closed.substr(5,2)) {
@@ -101,8 +116,8 @@ class CatTime extends Component {
                             break;
                         case '04':
                             month[3] = month[3] + 1
-                            console.log(data.results[p].date_closed.substr(5,2))
-                            console.log(categories[j])  
+                            //console.log(data.results[p].date_closed.substr(5,2))
+                            //console.log(categories[j])  
                             break;
                         case '05':
                             month[4] = month[4] + 1
@@ -111,8 +126,8 @@ class CatTime extends Component {
                             break;
                         case '06':
                             month[5] = month[5] + 1
-                            console.log(data.results[p].date_closed.substr(5,2))
-                            console.log(categories[j])  
+                            //console.log(data.results[p].date_closed.substr(5,2))
+                            //console.log(categories[j])  
                             break;
                         case '07':
                             month[6] = month[6] + 1
@@ -149,10 +164,26 @@ class CatTime extends Component {
                     }
                 }
             }
+
+            //console.log(arrayNombres)
+            if (j===0){
+                showCats=[];
+            }
+            showCats.push({
+                label: arrayNombres[j],
+                data: month,
+                fill: true,
+                color:"#04B404",
+                borderColor: "#04B404",
+                borderWidth: 2
+            })
+            //console.log(arrayNombres)
+            //console.log(showCats)
+
+            month = [0,0,0,0,0,0,0,0,0,0,0,0]
         }
-    }
-  
-    render() {
+        }
+
         var options = {
             lineTension: 0,
             responsive: true,
@@ -165,29 +196,17 @@ class CatTime extends Component {
                 }]
             }
         }
-
-        // hace un if para que mire si termino y si termino que ponga lo que está acá abajo.
+        
         speedData = {
-            labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Sepriembre", "Octubre", "Noviembre", "Diciembre"],
-            datasets: [{
-                label:"No funca",
-                data: [0,1,2,3,4,5,6,7,8,9,10,11],
-                fill: true,
-                color:"#04B404",
-                borderColor: "#04B404",
-                borderWidth: 2
-            }]
+            labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+            datasets: showCats
         }
-        if (this.state.termino) {
-            speedData = {
-                labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Sepriembre", "Octubre", "Noviembre", "Diciembre"],
-                datasets: showCats
-            }
-        }
+        //console.log(speedData)
+        console.log(arrayNombres)
 
         return (
             <div className="CatTime">
-              <div>  
+              <div> 
                 <Line
                     data={speedData}
                     options = {options}
